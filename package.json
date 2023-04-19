@@ -1,6 +1,6 @@
 {
   "name": "@ssegning/multer-wrapper",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "author": "Stephane Lambou <selastlambou@gmail.com>",
   "scripts": {
     "build": "rimraf build && tsc",
@@ -78,7 +78,8 @@
       "!dist/**/*",
       "!package.json",
       "!types.d.ts",
-      "!yarn.lock"
+      "!yarn.lock",
+      "!tsconfig.json"
     ]
   }
 }
