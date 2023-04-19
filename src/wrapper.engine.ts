@@ -51,11 +51,11 @@ export class WrapperEngine implements StorageEngine {
       .subscribe({
         next: (value) => {
           callback(undefined, value);
-          // sub.unsubscribe();
+          sub.unsubscribe();
         },
         error: err => {
           callback(err);
-          // sub.unsubscribe();
+          sub.unsubscribe();
         },
       });
   }
@@ -69,11 +69,11 @@ export class WrapperEngine implements StorageEngine {
       .subscribe({
         next: () => {
           callback(null);
-          // sub.unsubscribe();
+          sub.unsubscribe();
         },
         error: err => {
           callback(err);
-          // sub.unsubscribe();
+          sub.unsubscribe();
         },
       });
   }

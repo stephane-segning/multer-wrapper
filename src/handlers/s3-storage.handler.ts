@@ -1,9 +1,8 @@
 import { BaseHandler } from './base-handler';
 import { Request } from 'express';
-import { bindCallback, map, Observable, of, switchMap } from 'rxjs';
+import { from, map, Observable, of, switchMap } from 'rxjs';
 import { FileUploadOptions } from '../types';
 import { S3 } from 'aws-sdk';
-import { AWSError } from 'aws-sdk/lib/error';
 import { resolveParams } from '../helpers/string-resolve';
 
 export class S3StorageHandler implements BaseHandler {
@@ -18,17 +17,9 @@ export class S3StorageHandler implements BaseHandler {
   }
 
   public upload(req: Request, file: Express.Multer.File): Observable<Partial<Express.Multer.File>> {
-    const upload = bindCallback(this.putObject);
-
     return resolveParams(req, file, this.fileOptions).pipe(
-      switchMap((params) => upload(params)
+      switchMap((params) => from(this.putObject(params))
         .pipe(
-          map(([err, value]) => {
-            if (err) {
-              throw err;
-            }
-            return value;
-          }),
           map((result) => ({ params, result })),
         )),
       map(({ result, params }) => ({
@@ -49,5 +40,5 @@ export class S3StorageHandler implements BaseHandler {
     );
   }
 
-  private putObject = (params: S3.Types.PutObjectRequest, callback?: (err: AWSError, data: S3.Types.PutObjectOutput) => void) => this.client.putObject;
+  private putObject = (params: S3.Types.PutObjectRequest) => this.client.putObject(params).promise();
 }

@@ -1,7 +1,7 @@
 import type { BaseHandler } from './base-handler';
 import type { Request } from 'express';
-import { bindCallback, map, Observable, of, switchMap } from 'rxjs';
-import { Client, ItemBucketMetadata, ResultCallback, UploadedObjectInfo } from 'minio';
+import { from, map, Observable, of, switchMap } from 'rxjs';
+import { Client, ItemBucketMetadata } from 'minio';
 import type { Readable as ReadableStream } from 'stream';
 import { resolveParams } from '../helpers/string-resolve';
 import type { FileUploadOptions } from '../types';
@@ -31,17 +31,9 @@ export class MinioClientStorageHandler implements BaseHandler {
   }
 
   public upload(req: Request, file: Express.Multer.File): Observable<Partial<Express.Multer.File>> {
-    const upload = bindCallback(this.putObject);
-
     return resolveParams(req, file, this.fileOptions).pipe(
-      switchMap((params) => upload(params.bucket, params.key, file.stream, params.metaData)
+      switchMap((params) => from(this.putObject(params.bucket, params.key, file.stream, params.metaData || {}))
         .pipe(
-          map(([err, value]) => {
-            if (err) {
-              throw err;
-            }
-            return value;
-          }),
           map((result) => ({ params, result })),
         )),
       map(({ result, params }) => ({
@@ -66,7 +58,6 @@ export class MinioClientStorageHandler implements BaseHandler {
     bucketName: string,
     objectName: string,
     stream: ReadableStream | Buffer | string,
-    metaData?: ItemBucketMetadata,
-    callback?: ResultCallback<UploadedObjectInfo>,
-  ) => this.client.putObject;
+    metaData: ItemBucketMetadata,
+  ) => this.client.putObject(bucketName, objectName, stream, metaData);
 }

@@ -1,12 +1,12 @@
 import { FileUploadOptions, ParamResolver, SimpleResolver } from '../types';
-import { bindCallback, filter, forkJoin, map, Observable, of, switchMap } from 'rxjs';
+import { filter, forkJoin, from, map, Observable, of, switchMap } from 'rxjs';
 import { Request } from 'express';
 
 export function flatResolver<V>(r: ParamResolver<V>): SimpleResolver<V> {
   if (typeof r === 'function') {
     return r as any;
   } else {
-    return (res, file, callback) => callback(r);
+    return (res, file, callback) => callback(null, r);
   }
 }
 
@@ -15,13 +15,12 @@ export function resolveParam<V>(req: Request, file: Express.Multer.File, key: Pa
     .pipe(
       filter(i => !!i),
       map(p => flatResolver(p!)),
-      switchMap(p => bindCallback(p)(req, file)),
-      map(([err, value]) => {
-        if (err || !value) {
-          throw err || 'missing value';
-        }
-        return value;
-      }),
+      switchMap(p => from(new Promise<V>((resolve, reject) => {
+        p(req, file, (err, value) => {
+          if (err || !value) return reject(err);
+          resolve(value);
+        });
+      }))),
     );
 }
 
@@ -38,6 +37,6 @@ export function resolveParams<T>(req: Request, file: Express.Multer.File, fileOp
       }), {}),
   ).pipe(
     // Because I don't know how to keep the code hard typed inside this method.
-    map(m => m as any),
+    map(m => (m as any)),
   );
 }

@@ -6,6 +6,8 @@ import * as http from 'http';
 import * as path from 'path';
 import { Client } from 'minio';
 import request = require('supertest');
+import * as crypto from 'crypto';
+import {contentType} from "mime-types";
 
 describe('Minio upload', () => {
   let app: Application;
@@ -15,20 +17,30 @@ describe('Minio upload', () => {
   beforeAll(async () => {
     wrapperEngine = new WrapperEngine({
       client: new Client({
-        endPoint: process.env.S3_ENDPOINT,
-        accessKey: '',
-        secretKey: ''
+        endPoint: process.env.MINIO_HOST!,
+        port: Number(process.env.MINIO_PORT),
+        pathStyle: true,
+        accessKey: process.env.MINIO_ROOT_USER!,
+        secretKey: process.env.MINIO_ROOT_PASSWORD!,
+        useSSL: process.env.MINIO_USE_SSL === 'true'
       }),
       vendor: 'MinioClient',
       fileOptions: {
-        metaData: (req, file, callback) => {
-          callback(null, {
-            'Content-Type': '',
+        bucket: process.env.MINIO_BUCKET!,
+        key: (req, file, cb) => {
+          crypto.randomBytes(16, (err, raw) => {
+            const ranHex = err ? 'undefined' : raw.toString("hex");
+            cb(err, ranHex + '-' + file.originalname.replace(/ /ig, '_'));
           });
         },
-        bucket: 'test',
-        key: (req, file, callback) => {
-          callback(null, 'test-' + file.filename);
+        metaData: (req, file, callback) => {
+          const newContentType = contentType(file.mimetype) || contentType(file.originalname) || file.mimetype;
+
+          callback(null, {
+            "Cache-Control": 'public,immutable,max-age=31536000',
+            "Content-Type": newContentType,
+            ACL: "public-read",
+          });
         },
       },
     });
@@ -43,7 +55,7 @@ describe('Minio upload', () => {
   });
 
   it('upload single file', async () => {
-    const filePath = path.resolve(__dirname, './samples/sample-1-pexels.jpg');
+    const filePath = path.resolve(__dirname, './samples/sample-2-pexels.jpg');
 
     await request(app)
       .post('/single')
@@ -51,15 +63,15 @@ describe('Minio upload', () => {
       .attach('file', filePath)
       .expect((res) => {
         const { file } = JSON.parse(res.text);
-        if (!('size' in file)) {
-          throw new Error('Missing attribute [size] in file response');
+        if (!('originalname' in file)) {
+          throw new Error('Missing attribute [originalname] in file response');
         }
-        if ('transformations' in file) {
-          throw new Error('Wrong attribute [transformations] in response file');
+        if (!('key' in file)) {
+          throw new Error('Wrong attribute [key] in response file');
         }
       })
       .expect(StatusCodes.CREATED);
-  });
+  }, 60_000);
 
   it('upload no file', async () => {
     await request(app)
