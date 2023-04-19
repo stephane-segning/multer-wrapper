@@ -1,6 +1,6 @@
 {
   "name": "@ssegning/multer-wrapper",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Stephane Lambou <selastlambou@gmail.com>",
   "scripts": {
     "build": "rimraf build && tsc",
