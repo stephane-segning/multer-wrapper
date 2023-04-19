@@ -1,0 +1,8 @@
+coverage
+uploads
+node_modules
+.vscode
+.idea
+dist
+*.log
+.npmignore
