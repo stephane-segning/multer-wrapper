@@ -47,7 +47,6 @@ export class MinioClientStorageHandler implements BaseHandler {
         serverSideEncryption: undefined,
         metadata: params.metaData,
         etag: result.etag,
-        versionId: result.versionId,
         filename: file.originalname,
         mimetype: file.mimetype,
       })),

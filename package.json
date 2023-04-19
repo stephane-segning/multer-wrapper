@@ -12,13 +12,6 @@
     "prepack": "npmignore --auto"
   },
   "main": "dist/index.js",
-  "files": [
-    "README.md",
-    "dist/",
-    "tsconfig.json",
-    "types.d.ts",
-    "yarn.lock"
-  ],
   "license": "MIT",
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.315.0",

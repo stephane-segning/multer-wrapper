@@ -10,6 +10,7 @@
     "strict": true,
     "skipLibCheck": true,
     "declaration": true,
+    "declarationMap": true,
     "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
     "importHelpers": true

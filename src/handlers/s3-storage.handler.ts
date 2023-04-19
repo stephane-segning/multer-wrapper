@@ -33,7 +33,6 @@ export class S3StorageHandler implements BaseHandler {
         serverSideEncryption: params.ServerSideEncryption,
         metadata: params.Metadata,
         etag: result.ETag,
-        versionId: result.VersionId,
         filename: file.originalname,
         mimetype: file.mimetype,
       })),
