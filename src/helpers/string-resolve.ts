@@ -1,6 +1,6 @@
-import { FileUploadOptions, ParamResolver, SimpleResolver } from '../types';
+import type { FileUploadOptions, ParamResolver, SimpleResolver } from '../types';
+import type { Request } from 'express';
 import { filter, forkJoin, from, map, Observable, of, switchMap } from 'rxjs';
-import { Request } from 'express';
 
 export function flatResolver<V>(r: ParamResolver<V>): SimpleResolver<V> {
   if (typeof r === 'function') {

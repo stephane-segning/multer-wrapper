@@ -1,7 +1,7 @@
 import type { BaseHandler } from './base-handler';
 import type { Request } from 'express';
 import { from, map, Observable, of, switchMap } from 'rxjs';
-import { Client, ItemBucketMetadata } from 'minio';
+import type { Client, ItemBucketMetadata } from 'minio';
 import type { Readable as ReadableStream } from 'stream';
 import { resolveParams } from '../helpers/string-resolve';
 import type { FileUploadOptions } from '../types';

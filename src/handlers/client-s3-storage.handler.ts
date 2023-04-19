@@ -1,8 +1,8 @@
-import { BaseHandler } from './base-handler';
-import { Request } from 'express';
+import type { BaseHandler } from './base-handler';
+import type { Request } from 'express';
 import { from, map, Observable, of, switchMap } from 'rxjs';
-import { FileUploadOptions } from '../types';
-import { PutObjectCommandInput, PutObjectRequest, S3 } from '@aws-sdk/client-s3';
+import type { FileUploadOptions } from '../types';
+import type { PutObjectCommandInput, PutObjectRequest, S3 } from '@aws-sdk/client-s3';
 import { resolveParams } from '../helpers/string-resolve';
 
 export class ClientS3StorageHandler implements BaseHandler {

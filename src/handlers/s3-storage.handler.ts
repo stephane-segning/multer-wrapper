@@ -1,7 +1,7 @@
-import { BaseHandler } from './base-handler';
-import { Request } from 'express';
+import type { BaseHandler } from './base-handler';
+import type { Request } from 'express';
 import { from, map, Observable, of, switchMap } from 'rxjs';
-import { FileUploadOptions } from '../types';
+import type { FileUploadOptions } from '../types';
 import { S3 } from 'aws-sdk';
 import { resolveParams } from '../helpers/string-resolve';
 
