@@ -1,9 +1,9 @@
 {
   "name": "@ssegning/multer-wrapper",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "author": "Stephane Lambou <selastlambou@gmail.com>",
   "scripts": {
-    "build": "rimraf build && tsc",
+    "build": "rimraf build && tsc && cp src/*.d.ts dist/",
     "lint": "eslint src/**/*.ts",
     "format": "eslint src/**/*.ts --fix",
     "dev": "tsnd --respawn src/index.ts",
@@ -77,9 +77,6 @@
       "*",
       "!dist/**/*",
       "!package.json",
-      "!types.d.ts",
-      "!yarn.lock",
-      "!tsconfig.json",
       "!README.md"
     ]
   }
